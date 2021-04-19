@@ -1,0 +1,11 @@
+en:
+  system_messages:
+    shopper_found_availability:
+      title: "Availability for %{product_name}"
+      subject_template: "Availability for %{product_name}"
+      text_body_template: |
+        Might have found something!
+
+        [5950x](https://www.canadacomputers.com/product_info.php?cPath=4_64_1969&item_id=183427)
+
+        %{availability}
