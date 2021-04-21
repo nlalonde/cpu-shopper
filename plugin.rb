@@ -9,8 +9,8 @@
 
 enabled_site_setting :neil_cpu_shopper
 
-gem "mechanize", "2.8.0", require: false
-
-# after_initialize do
-
-# end
+after_initialize do
+  [
+    "../app/jobs/scheduled/canada_computers_checker.rb",
+  ].each { |path| load File.expand_path(path, __FILE__) }
+end

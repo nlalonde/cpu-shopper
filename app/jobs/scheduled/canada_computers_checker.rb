@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "mechanize"
+require 'net/http'
 
 module Jobs
   class CanadaComputersChecker < ::Jobs::Scheduled
@@ -12,13 +12,17 @@ module Jobs
     end
 
     def check_5950x
-      agent = Mechanize.new do |m|
-        m.user_agent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0"
-      end
+      canada_computers_url = "https://www.canadacomputers.com/product_info.php?ajaxstock=true&itemid=183427"
 
-      r = agent.get("https://www.canadacomputers.com/product_info.php?ajaxstock=true&itemid=183427")
+      uri = URI(canada_computers_url)
+      request = Net::HTTP::Get.new(uri)
+      request.add_field(
+        "User-Agent",
+        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0"
+      )
+      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) { |http| http.request(request) }
 
-      json = JSON.parse(r.body)
+      json = JSON.parse(response.body)
 
       h = build_availability_hash(json)
 
@@ -30,6 +34,8 @@ module Jobs
       elsif other_available?(h)
         notify_availability("5950x-other", build_availability_string(json))
       end
+
+      h
     end
 
     def build_availability_hash(json)
